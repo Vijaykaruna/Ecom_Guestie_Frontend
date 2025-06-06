@@ -109,6 +109,9 @@ const OrderDetails = () => {
         </div>
           <p className="text-center font-monospace text-secondary">"If you have any doubt, Please contact management"</p>
           <p className="text-center font-monospace text-secondary">"Contact Number : 98765 43210"</p>
+           <div className="my-2 d-flex justify-content-center">
+             <button className="btn btn-danger px-5" onClick={handleBack}>Foods Page</button>
+          </div>
           <div>
             <form onSubmit={(e) => {
               e.preventDefault();
@@ -127,9 +130,6 @@ const OrderDetails = () => {
               <button className="btn btn-sm btn-primary float-end m-1" type="submit">Submit</button>
             </form>
           </div>
-        <div className="p-3 position-absolute bottom-0 start-50 translate-middle-x">
-          <button className="btn btn-danger px-5" onClick={handleBack}>Foods Page</button>
-        </div>
      </div>
     )
 }

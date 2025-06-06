@@ -22,6 +22,7 @@ interface GuestTableProps {
 }
 
 const GuestTable: React.FC<GuestTableProps> = ({ guests, onStayUpdate }) => {
+
   const handleStayUpdate = async (guest: Guest, newStay: "Yes" | "No") => {
     if (!guest._id) return;
 
@@ -40,11 +41,22 @@ const GuestTable: React.FC<GuestTableProps> = ({ guests, onStayUpdate }) => {
     return <p className="text-secondary text-center">No guest bookings yet.</p>;
   }
 
+  const formatDate = (dateStr: string) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return dateStr;
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+};
+
+
   return (
     <div className="table-responsive">
       <table className="table table-bordered table-striped align-middle">
         <thead className='border'>
-          <tr>
+          <tr className='text-center'>
             <th>Name</th>
             <th>Mobile</th>
             <th>Room</th>
@@ -56,15 +68,15 @@ const GuestTable: React.FC<GuestTableProps> = ({ guests, onStayUpdate }) => {
         </thead>
         <tbody className="table-group-divider">
           {guests.map((guest, index) => (
-            <tr key={index}>
+            <tr key={index} className='text-center'>
               <td>{guest.name}</td>
               <td>{guest.mobile}</td>
               <td>{guest.roomNumber}</td>
               <td>{guest.guests}</td>
-              <td>{guest.checkIn}</td>
-              <td>{guest.checkOut}</td>
+              <td>{formatDate(guest.checkIn)}</td>
+              <td>{formatDate(guest.checkOut)}</td>
               <td>
-                <div className="d-flex gap-2">
+                <div className="d-flex gap-2 justify-content-center">
                   {guest.stay === "Yes" ? (
                     <Button
                       variant="success"

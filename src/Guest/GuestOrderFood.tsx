@@ -66,7 +66,6 @@ const VerifyGuest = () => {
     withCredentials: true, 
   })
   .then((res) => {
-    //console.log(res.data.guestId)
     if (res.data.success) {
       console.log("Guest verified");
       setVerify(true);
@@ -255,16 +254,12 @@ function GotoCartPage() {
           >
             Check
           </Button>):(
-          //   <Button 
-          //   className="btn btn-success btn-sm" 
-          //   disabled={verify === true}
-          // >
-          //   Verified
-          // </Button>
           <IoCheckmarkCircleOutline className="text-success fs-1" />
           )}
           </div>
-           <p className="text-danger text-center">{errVerify}</p>
+          {verify === false && (
+            <p className="text-danger text-center">{errVerify}</p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

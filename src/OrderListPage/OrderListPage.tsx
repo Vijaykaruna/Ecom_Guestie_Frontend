@@ -156,7 +156,7 @@ function UpdateRejected(_id: string) {
         ) : (
         <tbody className="table-group-divider">
          { OrderList.map((list, index) => (
-          <tr key={index}>
+          <tr key={index} className="text-center">
           <td>{list.name}</td>
           <td>{list.roomNumber}</td>
           <td>{list.date}</td>
@@ -179,8 +179,8 @@ function UpdateRejected(_id: string) {
               )
             ) : (
               <>
-                <p className="text-danger">{`"${list.status}"`}</p>
-                <div className="d-flex justify-content-between">
+                <p className="text-danger text-center">{`"${list.status}"`}</p>
+                <div className="d-flex justify-content-evenly">
                   <button
                     onClick={() => UpdateDelivery(list._id!)}
                     className="ms-1 btn btn-sm btn-success"

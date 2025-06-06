@@ -11,7 +11,6 @@ interface Guest {
   guests: number;
   checkIn: string;
   checkOut: string;
-  specialRequests?: string;
   stay: string;
   payment: string;
   amount: number;
@@ -35,7 +34,6 @@ const GuestFormModal: React.FC<{
     payment: "Pending",
     amount: 0,
   });
-
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -74,7 +72,6 @@ const handleSubmit = () => {
       alert("Error: " + (err.response?.data?.message || "Could not add guest."));
     });
 };
-
 
   return (
     <Modal show={show} onHide={onHide}>

@@ -14,32 +14,62 @@ import Dashboard from "../Dashboard/Dashboard";
 import OrderListPage from "../OrderListPage/OrderListPage";
 import InvoicePage from "../InvoicePage/InvoicePage";
 import ReviewPage from "../ReviewPage/ReviewPage";
-import Modal from 'react-bootstrap/Modal';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { CiEdit } from "react-icons/ci";
+import { Modal, Button, Form } from 'react-bootstrap';
 import RoomBookingPage from "../RoomBooking/RoomBookingPage";
 
-function MainPage(){
-  
-    const navigate = useNavigate();
-    const[name, setName] = useState('');
-    const[mail, setMail] = useState('');
 
+const MainPage: React.FC = () => {
+
+  type Profile = {
+   id: string;
+   user: string;
+   email: string;
+   mobile: string;
+   hotel: string;
+   rooms: number;
+   address: string;
+  };
+    const [profileDetails, setProfileDetails] = useState<Profile | null>(null);
+    const navigate = useNavigate();
+    const[userName, setUserName] = useState('');
+    const[mail, setMail] = useState('');
+    const[mobile, setMobile] = useState('');
+    const[hotelName, setHotelName] = useState('');
+    const[address, setAddress] = useState('');
+   
     useEffect(() => {
       axios.get('http://localhost:5000/profile', {withCredentials: true})
       .then( res => {
-        setName(res.data.name);
+        setUserName(res.data.name);
         setMail(res.data.email)
       })
-    },[])
+    },[]);
+
+     const initial = userName ? userName.charAt(0).toUpperCase() : '?';
+     useEffect(() => {
+      axios.get("http://localhost:5000/UserDetails", {withCredentials: true})
+      .then(res => {
+        //console.log(res.data);
+        setProfileDetails(res.data);
+      })
+      .catch(e => {
+        console.log(e);
+      })
+     },[]);
 
     function Logout() {
       axios.post('http://localhost:5000/logout', {withCredentials: true})
       .then(res => {
         console.log(res);
-        setName('');
+        setUserName('');
         setMail('')
+        setMobile('');
+        setHotelName('');
+        setAddress('');
         navigate("/login")
       })
     }
@@ -68,6 +98,36 @@ function MainPage(){
 
       function GotoGuest(){
         navigate('/guest')
+      };
+
+      const [showEdit, setShowEdit] = useState(false);
+      const handleCloseEdit = () =>{
+        setShowEdit(false);
+        setMobile('');
+        setHotelName('');
+        setAddress('');
+      } 
+      const handleShowEdit = () => setShowEdit(true);
+
+      const SaveProfile = () => {
+        axios.post("http://localhost:5000/ProfileDetails",
+          {
+            userName,
+            mail,
+            mobile,
+            hotelName,
+            address,
+            rooms: 0,
+          },
+          {withCredentials: true})
+          .then(res => {
+            console.log(res.data);
+            setMobile('');
+            setHotelName('');
+            setAddress('');
+          }).catch(err => {
+            console.log(err);
+          })
       }
 
     return(
@@ -125,14 +185,61 @@ function MainPage(){
            <Modal.Body>No message</Modal.Body>
           </Modal>
 
+          <Modal
+            show={showEdit}
+            onHide={handleCloseEdit}
+            backdrop="static"
+            keyboard={false}
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Edit Profile</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group className="mb-2">
+                  <Form.Label>Mobile</Form.Label>
+                  <Form.Control name="Mobile" value={mobile} onChange={e => setMobile(e.target.value)} required />
+                </Form.Group>
+                <Form.Group className="mb-2">
+                  <Form.Label>Hotel Name</Form.Label>
+                  <Form.Control name="Hotel Name" value={hotelName} onChange={e => setHotelName(e.target.value)} required />
+                </Form.Group>
+                <Form.Group className="mb-2">
+                  <Form.Label>Address</Form.Label>
+                  <Form.Control name="Address" value={address} onChange={e => setAddress(e.target.value)} />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="primary" onClick={SaveProfile}>Save</Button>
+            </Modal.Footer>
+          </Modal>
+
           <Offcanvas show={showProfile} onHide={handleCloseProfile} placement="end">
             <Offcanvas.Header className="border-bottom" closeButton>
              <Offcanvas.Title>Profile</Offcanvas.Title>
             </Offcanvas.Header>
             <Offcanvas.Body>
-              <p>Name: {name}</p>
-              <p>Email: {mail}</p>
-              <button className="btn btn-danger" onClick={Logout}>Log Out</button>
+              <button className="btn btn-outline-light btn-sm float-end shadow-lg mx-2" onClick={handleShowEdit}><CiEdit className="fs-5 text-primary"/></button>
+               <div
+               className="bg-primary d-flex justify-content-center align-items-center text-light fw-bold fs-1 text-uppercase rounded-pill user-select-none position-relative top-25 start-50 translate-middle-x shadow-lg"
+                style={{
+                  width: 80,
+                  height: 80,
+                }}
+              >
+                {initial}
+              </div>
+              {profileDetails && (
+              <div key={profileDetails.id}>
+                <p>Name: {profileDetails.user}</p>
+                <p>Email: {profileDetails.email}</p>
+                <p>Mobile: {profileDetails.mobile}</p>
+                <p>Hotel Name: {profileDetails.hotel}</p>
+                <p>Address: {profileDetails.address}</p>
+              </div>
+            )}
+              <button className="btn btn-danger rounded-1 position-absolute bottom-0 start-50 translate-middle-x my-3" onClick={Logout}>Log Out</button>
             </Offcanvas.Body>
           </Offcanvas>
 

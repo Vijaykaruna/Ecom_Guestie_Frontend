@@ -36,7 +36,7 @@ function ReviewPage(){
                             <p className="float-end">{items.date}</p>
                             <p className="fw-bold">{`Room No: ${items.roomNumber}`}</p>
                         </div>
-                        <div className="border bg-light bg-opacity-50 rounded-3 py-3">"{items.message}"</div>
+                        <div className="border bg-light bg-opacity-50 rounded-3 py-3 text-dark">"{items.message}"</div>
                     </div>
                 ))
             ) : (

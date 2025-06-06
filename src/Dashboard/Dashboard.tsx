@@ -33,17 +33,62 @@ const Dashboard: React.FC = () => {
       _id: string;
       foods:food[];
     };
-    
+
+    type Profile = {
+       id: string;
+       user: string;
+       email: string;
+       mobile: string;
+       hotel: string;
+       rooms: number;
+       address: string;
+      };
+  
+  const [profileDetails, setProfileDetails] = useState<Profile | null>(null);  
   const [OrderList, setOrderList] = useState<OrderLists[]>([]);
   const [ShowFood, setShowFood] = useState<OrderLists[]>([]);
 
-   const FoodsClose = () => setShow(false);
-  const FoodsShow = () => setShow(true);
+   const FoodsClose = () => setFoods(false);
+  const FoodsShow = () => setFoods(true);
   
   const [show, setShow] = useState(false);
-  const [room, setRoom] = useState<string>("00");
+  const[foods, setFoods] = useState(false);
+  const [rooms, setRooms] = useState<number>(0);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const[countOrder, setCountOrder] = useState(0);
+  const [amount, setAmount] = useState(0);
+
+  useEffect(() => {
+  axios.get("http://localhost:5000/UserDetails", { withCredentials: true })
+    .then(res => {
+      setProfileDetails(res.data);
+      setRooms(res.data.rooms);
+    })
+    .catch(e => {
+      console.log(e);
+    });
+}, []);
+
+ useEffect(() => {
+  axios.get("http://localhost:5000/TotalAmount", { withCredentials: true })
+    .then(res => {
+      const orders = res.data.orders;
+      const total = orders.reduce((sum: number, order: any) => {
+        return sum + order.amount;
+      }, 0);
+      setAmount(total);
+    })
+    .catch(err => console.log(err));
+}, []);
+
+    useEffect(() => {
+      axios.get("http://localhost:5000/CountOrderFoodList", {withCredentials: true})
+          .then(res => {
+            setCountOrder(res.data);
+          })
+          .catch(err => console.log(err));
+    },[]);
 
     useEffect(() => {
      axios.get("http://localhost:5000/OrderFoodListPending",{
@@ -52,6 +97,18 @@ const Dashboard: React.FC = () => {
         setOrderList(res.data);
      }).catch((err) => {console.log(err)})
      },[]);
+
+const SaveRooms = () => {
+  axios.patch("http://localhost:5000/SetRooms", { rooms }, { withCredentials: true })
+    .then(res => {
+      console.log(res.data.message);
+      setProfileDetails(res.data);
+      handleClose();
+    })
+    .catch(e => {
+      console.log(e);
+    });
+};
 
   function showFoods(_id: string){
     axios.get(`http://localhost:5000/showOrderFoods`, {
@@ -63,9 +120,9 @@ const Dashboard: React.FC = () => {
     FoodsShow();
   };
   const dashTable: DashboardCard[] = [
-    { title: "Total Rooms", img: TotalRooms, values: room, label: "Only 5 Rooms available", color: "success" },
-    { title: "Total Orders", img: TotalOrders, values: "000", label: "1.5% Up from past week", color: "success" },
-    { title: "Total Sales", img: TotalSales, values: "RS 00000", label: "4.3% Down from yesterday", color: "danger" },
+    { title: "Total Rooms", img: TotalRooms, values: `${rooms}`, label: "Only 5 Rooms available", color: "success" },
+    { title: "Total Orders", img: TotalOrders, values: `${countOrder}`, label: "1.5% Up from past week", color: "success" },
+    { title: "Total Sales", img: TotalSales, values: `₹${amount}`, label: "4.3% Down from yesterday", color: "danger" },
   ];
 
   return (
@@ -92,18 +149,22 @@ const Dashboard: React.FC = () => {
         <Modal.Body>
           <Form.Group className="mb-2">
             <Form.Label>Enter the total number of Rooms</Form.Label>
-            <Form.Control type="number" name="rooms" value={room} onChange={(e) => setRoom(e.target.value)} required />
+            <Form.Control type="number" name="rooms" value={rooms} onChange={(e) => setRooms(Number(e.target.value))} required />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
+          <Button 
+            variant="primary" 
+            onClick={SaveRooms}
+            disabled={rooms <= 0}
+            >
             Submit
           </Button>
         </Modal.Footer>
       </Modal>
 
              <Modal 
-              show={show} 
+              show={foods} 
               onHide={FoodsClose} 
               centered
               >
