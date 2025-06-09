@@ -31,7 +31,7 @@ const RoomBookingPage: React.FC = () => {
     fetchGuests();
   }, []);
 
-  const addGuest = (guest: Guest) => {
+  const addGuest = (_guest: Guest) => {
     fetchGuests();
     setShowModal(false);
   };

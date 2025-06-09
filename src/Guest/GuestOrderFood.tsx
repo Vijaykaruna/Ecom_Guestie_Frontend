@@ -9,8 +9,11 @@ import { ToastContainer } from "react-bootstrap";
 import { IoCheckmarkCircleOutline } from "react-icons/io5";
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import {useNavigate} from "react-router-dom";
+import { MdReportProblem } from "react-icons/md";
 
 const GuestOrderFood: React.FC = () => {
   const navigate = useNavigate();
@@ -37,7 +40,7 @@ const GuestOrderFood: React.FC = () => {
   const[count, setCount] = useState(0); 
   const[verify, setVerify] = useState<boolean>(false);
   const[errVerify, setErrVerify] = useState<string>('');
-  const[guestId, setGuestId] = useState<string>('');
+  const[guestId, setGuestId] = useState<string>('guest');
   const isRoomSelected = () => roomNumber !== 0;
 
   const [showA, setShowA] = useState(true);
@@ -177,16 +180,71 @@ function GotoCartPage() {
       .catch((err) => console.error(`Error loading ${url}:`, err));
   });
 }, []);
+//  For complaits
+  const [showReport, setShowReport] = useState<boolean>(false);
 
+  const handleCloseReport = () => setShowReport(false);
+  const handleShowReport = () => setShowReport(true);
+  const [repoterRoom, setReporterRoom] = useState<number>(0);
+  const [report, setReport] = useState<string>('');
+  const [reporterName, setReporterName] = useState<string>('');
+
+  const now = new Date();
+  const formattedDateTime = now.toLocaleString();
+
+    const AddReport = () => {
+      axios.post("http://localhost:5000/AddReport", 
+         {  guestId,
+            comments: report,
+            name: reporterName,
+            date: formattedDateTime,
+            roomNumber: repoterRoom,
+            types: "Complait"
+           },
+        {withCredentials: true}
+      ).then((res) => {
+        console.log(res.data.message);
+        setReport('');
+        setReporterName('');
+        setReporterRoom(0);
+        handleCloseReport();
+      }).catch((err) => {
+        console.log(err);
+      })
+    };
+    const [totalRooms, setTotalRooms] = useState<number>(10);
+    
+      useEffect(() => {
+        axios.get("http://localhost:5000/Rooms", { withCredentials: true })
+      .then(res => {
+        setTotalRooms(res.data.data);
+      }).catch(err => {
+        console.log(err);
+      });
+      }, []);
     return(
       <div className="container">
         <div className="d-flex justify-content-between align-items-center border-secondary border-1 border-bottom px-4">
             <a href="#profile"><img src={logo} alt="logo" className="img-fluid" /></a>
-            
-              <div className="border border-secondary rounded-3 p-2">
-              <img src={trolly} alt="cart" /> 
-               <span id="orderId" className="badge text-bg-danger ms-2">{count}</span>
-            </div>
+              <div className="d-flex justify-content-between align-items-center gap-2">
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={
+                  <Tooltip>
+                    <strong>Report</strong>
+                  </Tooltip>}
+                  >
+                  <button className="btn btn-danger" onClick={handleShowReport}><MdReportProblem className="fs-5"/></button>
+                </OverlayTrigger>
+                 <div className="border border-secondary rounded-3 p-1">
+                  <img src={trolly} alt="cart" /> 
+                  {count > 0 ? (
+                    <span id="orderId" className="badge text-bg-danger ms-2">{count}</span>
+                  ):(
+                    <span></span>
+                  )}
+                 </div>
+              </div>
 
         </div>
         <div className="container-fluid bg-secondary bg-opacity-10 text-center shadow-lg">
@@ -216,12 +274,15 @@ function GotoCartPage() {
                 setCount(0);
               }}
             >
-                <option className="text-secondary" value={0}>Choose</option>
-                <option value={100}>100</option>
-                <option value={101}>101</option>
-                <option value={102}>102</option>
-                <option value={103}>103</option>
-                <option value={104}>104</option>
+              <option className="text-secondary" value={0}>Select Room</option>
+              {Array.from({ length: totalRooms }, (_, i) => {
+                const roomNumber = 100 + i;
+                return (
+                  <option key={roomNumber} value={roomNumber}>
+                    {roomNumber}
+                  </option>
+                );
+              })}
               </Form.Select>
             </div>
       </div>
@@ -270,20 +331,56 @@ function GotoCartPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+
+       <Modal show={showReport} onHide={handleCloseReport}>
+        <Modal.Header closeButton>
+          <Modal.Title>Report</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Group className="mb-2">
+            <Form.Label>Room Number</Form.Label>
+            <Form.Select name="roomNumber" value={repoterRoom} onChange={(e) => setReporterRoom(Number(e.target.value))} required>
+              <option value={0}>Select Room</option>
+              <option value={100}>100</option>
+              <option value={102}>102</option>
+            </Form.Select>
+          </Form.Group>
+          <Form.Group className="mb-2">
+            <Form.Label>Name</Form.Label>
+            <Form.Control name="name" value={reporterName} onChange={(e) => setReporterName(e.target.value)} required />
+          </Form.Group>
+          <Form.Group className="mb-2">
+            <Form.Label>Describe the Complaint</Form.Label>
+             <FloatingLabel
+              controlId="floatingTextarea"
+              label="Comments"
+              className="mb-3"
+             >
+            <Form.Control as="textarea" placeholder="Leave a comment here" value={report} onChange={(e) => setReport(e.target.value)} required/>
+            </FloatingLabel>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={AddReport}>
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
       <div className="tab-content text-dark mt-3" style={{height:"500px"}} >
         
         {selectedCategory === "breakfast" && (
           <div>
-            <p className="text-decoration-underline h3">Breakfast Items</p>
+            <p className="text-decoration-underline h3 my-3">Breakfast Items</p>
             <div className="table-responsive">
               <table className="table table-striped table-bordered align-middle">
                 <thead className="border">
                   <tr>
-                    <th scope="col" className="">Image</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th> 
                     <th scope="col">Quantity</th> 
-                    <th scope="col" className="">Action</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody className="table-group-divider">
@@ -333,16 +430,16 @@ function GotoCartPage() {
 
         {selectedCategory === "lunch" && (
           <div>
-            <p className="text-decoration-underline h3">Lunch Items</p>
+            <p className="text-decoration-underline h3 my-3">Lunch Items</p>
             <div className="table-responsive">
               <table className="table table-striped table-bordered align-middle">
                 <thead className="border">
                   <tr>
-                    <th scope="col" className="">Image</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th> 
-                    <th scope="col" className="">Action</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody className="table-group-divider">
@@ -392,16 +489,16 @@ function GotoCartPage() {
 
         {selectedCategory === "dinner" && (
           <div>
-            <p className="text-decoration-underline h3">Dinner Items</p>
+            <p className="text-decoration-underline h3 my-3">Dinner Items</p>
            <div className="table-responsive">
               <table className="table table-striped table-bordered align-middle">
                 <thead className="border">
                   <tr>
-                    <th scope="col" className="">Image</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
-                    <th scope="col" className="">Action</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody className="table-group-divider">
@@ -451,16 +548,16 @@ function GotoCartPage() {
 
         {selectedCategory === "refreshment" && (
           <div>
-            <p className="text-decoration-underline h3">Refreshment Items</p>
+            <p className="text-decoration-underline h3 my-3">Refreshment Items</p>
            <div className="table-responsive">
               <table className="table table-striped table-bordered align-middle">
                 <thead className="border">
                   <tr>
-                    <th scope="col" className="">Image</th>
+                    <th scope="col">Image</th>
                     <th scope="col">Name</th>
                     <th scope="col">Price</th>
                     <th scope="col">Quantity</th>
-                    <th scope="col" className="">Action</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody className="table-group-divider">

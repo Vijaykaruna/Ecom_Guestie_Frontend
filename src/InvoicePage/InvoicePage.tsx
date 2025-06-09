@@ -128,7 +128,6 @@ const InvoicePage: React.FC = () => {
   });
 }
 
-
   return (
     <div className="container-fluid rounded-4 my-3 px-lg-5 px-1 py-2 col-12 bg-light mx-auto mx-4 shadow-lg">
       <h5 className="my-4">Invoice:</h5>
@@ -242,6 +241,7 @@ const InvoicePage: React.FC = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+         <p className='text-center text-secondary'>If click the "Pending" button, to change the Payment status to "Paid".</p>
     </div>
   );
 };

@@ -34,17 +34,17 @@ const Dashboard: React.FC = () => {
       foods:food[];
     };
 
-    type Profile = {
-       id: string;
-       user: string;
-       email: string;
-       mobile: string;
-       hotel: string;
-       rooms: number;
-       address: string;
-      };
+    // type Profile = {
+    //    id: string;
+    //    user: string;
+    //    email: string;
+    //    mobile: string;
+    //    hotel: string;
+    //    rooms: number;
+    //    address: string;
+    //   };
   
-  const [profileDetails, setProfileDetails] = useState<Profile | null>(null);  
+  //const [profileDetails, setProfileDetails] = useState<Profile | null>(null);  
   const [OrderList, setOrderList] = useState<OrderLists[]>([]);
   const [ShowFood, setShowFood] = useState<OrderLists[]>([]);
 
@@ -62,7 +62,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
   axios.get("http://localhost:5000/UserDetails", { withCredentials: true })
     .then(res => {
-      setProfileDetails(res.data);
+     // setProfileDetails(res.data);
       setRooms(res.data.rooms);
     })
     .catch(e => {
@@ -102,7 +102,7 @@ const SaveRooms = () => {
   axios.patch("http://localhost:5000/SetRooms", { rooms }, { withCredentials: true })
     .then(res => {
       console.log(res.data.message);
-      setProfileDetails(res.data);
+      //setProfileDetails(res.data);
       handleClose();
     })
     .catch(e => {
@@ -142,26 +142,26 @@ const SaveRooms = () => {
         ))}
       </div>
       
-      <Modal show={show} onHide={handleClose} centered >
-        <Modal.Header closeButton>
-          <Modal.Title>Total Rooms</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Group className="mb-2">
-            <Form.Label>Enter the total number of Rooms</Form.Label>
-            <Form.Control type="number" name="rooms" value={rooms} onChange={(e) => setRooms(Number(e.target.value))} required />
-          </Form.Group>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button 
-            variant="primary" 
-            onClick={SaveRooms}
-            disabled={rooms <= 0}
-            >
-            Submit
-          </Button>
-        </Modal.Footer>
-      </Modal>
+          <Modal show={show} onHide={handleClose} centered >
+            <Modal.Header closeButton>
+              <Modal.Title>Total Rooms</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Group className="mb-2">
+                <Form.Label>Enter the total number of Rooms</Form.Label>
+                <Form.Control type="number" name="rooms" value={rooms} onChange={(e) => setRooms(Number(e.target.value))} required />
+              </Form.Group>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button 
+                variant="primary" 
+                onClick={SaveRooms}
+                disabled={rooms <= 0}
+                >
+                Submit
+              </Button>
+            </Modal.Footer>
+          </Modal>
 
              <Modal 
               show={foods} 

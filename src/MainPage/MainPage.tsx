@@ -53,7 +53,7 @@ const MainPage: React.FC = () => {
      useEffect(() => {
       axios.get("http://localhost:5000/UserDetails", {withCredentials: true})
       .then(res => {
-        //console.log(res.data);
+       // console.log(res.data);
         setProfileDetails(res.data);
       })
       .catch(e => {
@@ -117,14 +117,15 @@ const MainPage: React.FC = () => {
             mobile,
             hotelName,
             address,
-            rooms: 0,
+            rooms: 10,
           },
           {withCredentials: true})
           .then(res => {
-            console.log(res.data);
+            console.log(res.data.message);
             setMobile('');
             setHotelName('');
             setAddress('');
+            handleCloseEdit();
           }).catch(err => {
             console.log(err);
           })

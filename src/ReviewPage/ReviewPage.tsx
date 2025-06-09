@@ -11,6 +11,7 @@ function ReviewPage(){
         name: String;
         date: String;
         roomNumber: Number;
+        types: String;
     };
     const[reviews, setReviews] = useState<review[]>([]);
 
@@ -30,14 +31,27 @@ function ReviewPage(){
         <div className="text-center text-secondary">
             {reviews.length ? (
                 reviews.map((items, index) => (
-                    <div className="border border-1 bg-secondary bg-opacity-25 m-3 p-3 rounded-3" key={index}>
+                    <div key={index}>
+                     {items.types === "Review" ? (
+                       <div className="border border-1 bg-secondary bg-opacity-25 m-3 p-3 rounded-3">
                         <div className="d-flex justify-content-between text-dark">
                             <p className="fw-bold">{items.name}</p>
                             <p className="float-end">{items.date}</p>
                             <p className="fw-bold">{`Room No: ${items.roomNumber}`}</p>
                         </div>
-                        <div className="border bg-light bg-opacity-50 rounded-3 py-3 text-dark">"{items.message}"</div>
+                        <div className="bg-light bg-opacity-50 rounded-3 py-3 text-dark">"{items.message}"</div>
                     </div>
+                     ):(
+                       <div className="border border-1 border-danger bg-danger bg-opacity-75 m-3 p-3 rounded-3">
+                        <div className="d-flex justify-content-between text-dark">
+                            <p className="fw-bold">{items.name}</p>
+                            <p className="float-end">{items.date}</p>
+                            <p className="fw-bold">{`Room No: ${items.roomNumber}`}</p>
+                        </div>
+                        <div className="bg-light bg-opacity-25 rounded-3 py-3 text-dark">"{items.message}"</div>
+                    </div>
+                     )}   
+                </div> 
                 ))
             ) : (
              <p>No reviews</p>

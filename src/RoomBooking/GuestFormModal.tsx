@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 
 interface Guest {
@@ -21,8 +21,9 @@ const GuestFormModal: React.FC<{
   onHide: () => void;
   onSubmit: (guest: Guest) => void;
 }> = ({ show, onHide, onSubmit }) => {
+
   const [formData, setFormData] = useState<Guest>({
-    id:'',
+    id: '',
     name: '',
     mobile: '',
     email: '',
@@ -35,43 +36,55 @@ const GuestFormModal: React.FC<{
     amount: 0,
   });
 
+  const [totalRooms, setTotalRooms] = useState<number>(10);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/Rooms", { withCredentials: true })
+  .then(res => {
+    setTotalRooms(res.data.data);
+    //console.log("Rooms: ", res.data.data);
+  }).catch(err => {
+    console.log(err);
+  });
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: name === 'guests' ? +value : value }));
   };
-const handleSubmit = () => {
-  if (!formData.name || !/^\d{10}$/.test(formData.mobile)) {
-    alert("Please enter a valid name and 10-digit mobile number.");
-    return;
-  }
 
-  const guestData = {
-    ...formData
-  };
+  const handleSubmit = () => {
+    if (!formData.name || !/^\d{10}$/.test(formData.mobile)) {
+      alert("Please enter a valid name and 10-digit mobile number.");
+      return;
+    }
 
-  axios.post("http://localhost:5000/addGuest", guestData, { withCredentials: true })
-    .then((res) => {
-      //console.log(res.data.id);
-      onSubmit(guestData);
-      setFormData({
-        id:"",
-        name: '',
-        mobile: '',
-        email: '',
-        roomNumber: 0,
-        guests: 1,
-        checkIn: '',
-        checkOut: '',
-        stay: "Yes",
-        payment: "Pending",
-        amount: 0,
+    const guestData = { ...formData };
+
+    axios.post("http://localhost:5000/addGuest", guestData, { withCredentials: true })
+      .then((res) => {
+        onSubmit(guestData);
+        setFormData({
+          id: '',
+          name: '',
+          mobile: '',
+          email: '',
+          roomNumber: 0,
+          guests: 1,
+          checkIn: '',
+          checkOut: '',
+          stay: "Yes",
+          payment: "Pending",
+          amount: 0,
+        });
+        console.log(res.data);
+        
+      })
+      .catch((err) => {
+        console.error("Failed to add guest:", err);
+        alert("Error: " + (err.response?.data?.message || "Could not add guest."));
       });
-    })
-    .catch((err) => {
-      console.error("Failed to add guest:", err);
-      alert("Error: " + (err.response?.data?.message || "Could not add guest."));
-    });
-};
+  };
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -94,11 +107,21 @@ const handleSubmit = () => {
           </Form.Group>
           <Form.Group className="mb-2">
             <Form.Label>Room Number</Form.Label>
-            <Form.Select name="roomNumber" value={formData.roomNumber} onChange={handleChange} required>
-              <option value={0}>Select Room</option>
-              <option value={100}>100</option>
-              <option value={101}>101</option>
-              <option value={102}>102</option>
+            <Form.Select
+              name="roomNumber"
+              value={formData.roomNumber}
+              onChange={handleChange}
+              required
+            >
+              <option className='text-secondary' value={0}>Select Room</option>
+              {Array.from({ length: totalRooms }, (_, i) => {
+                const roomNumber = 100 + i;
+                return (
+                  <option key={roomNumber} value={roomNumber}>
+                    {roomNumber}
+                  </option>
+                );
+              })}
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-2">

@@ -207,7 +207,6 @@ function HomePage(){
                  <div className="d-flex justify-content-center align-items-center gap-3 ">
                     <p>7092719486</p>
                     <p>9688735554</p>
-                    <p>9342665057</p>
                  </div>
               </div>
               <div className="text-light text-center">

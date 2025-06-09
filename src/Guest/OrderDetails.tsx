@@ -57,6 +57,7 @@ const OrderDetails = () => {
           name: orderFoods[0].name,
           date: formattedDateTime,
           roomNumber: orderFoods[0].roomNumber,
+          types: "Review",
          },
       {withCredentials: true}
     ).then((res) => {
@@ -73,7 +74,7 @@ const OrderDetails = () => {
          <a href="#profile"><img src={logo} alt="logo" className="img-fluid" /></a>
         </div>
       <Col md={6} className="mb-2 mx-auto">
-        <Toast show={showA} bg={"success"} onClose={toggleShowA}>
+        <Toast show={showA} bg={"success"} onClose={toggleShowA} delay={3000} autohide>
           <Toast.Header>
             <strong className="me-auto">Success</strong>
           </Toast.Header>
