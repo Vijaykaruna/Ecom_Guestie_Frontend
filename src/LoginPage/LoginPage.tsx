@@ -32,8 +32,10 @@ function LoginPage(){
 
     return(
         <>
-           <Container className="d-flex align-items-center justiy-content-evenly gap-5 flex-column flex-lg-row my-5">
-               <div className="border bg-light p-3 rounded-3 col-12 shadow-lg col-lg-7">
+           <Container fluid
+                  className="min-vh-100 d-flex align-items-center justify-content-center flex-column flex-lg-row gap-5"
+                  >
+               <div className="border bg-light p-3 rounded-3 col-12 shadow-lg col-lg-6">
                    <h4 className="border-bottom my-4 pb-4 text-danger fw-bold">Welcome <span className="text-secondary">Back,</span></h4>
                     <div className="d-flex gap-4 align-items-center ps-5">
                         <img src={user} alt="user" className="img-fluid border rounded-pill p-1"/>

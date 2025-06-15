@@ -33,7 +33,9 @@ function HomePage(){
          <Navbar.Collapse id="basic-navbar-nav">
            <Nav className="ms-auto fw-bold text-center">
              <div>
-             <a href="#profile" id="btn2" className="d-lg-none d-xxl-block"><img src={profile} alt="profile" className="mx-1"/></a>
+                <a href="#profile" id="btn2" className="d-block d-lg-none">
+                  <img src={profile} alt="profile" className="mx-1" />
+                </a>     
              </div>
              <Nav.Link href="#home" className="mx-1 nav-links">Home</Nav.Link>
              <Nav.Link href="#about" className="mx-1 nav-links">About</Nav.Link>
@@ -43,7 +45,9 @@ function HomePage(){
              <button type="button" className="btn btn-danger mx-4" onClick={() => navigate('/login')} >Get a Free Trial</button>
            </Nav>
            <div>
-           <a href="#profile" className="d-none d-lg-block" ><img src={profile} alt="profile" className="mx-1"/></a>
+              <a href="#profile" className="d-none d-lg-block" onClick={() => navigate('/login')}>
+                <img src={profile} alt="profile" className="mx-1" />
+              </a>
            </div>
          </Navbar.Collapse>
        </Container>

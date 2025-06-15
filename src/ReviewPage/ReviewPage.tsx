@@ -42,13 +42,13 @@ function ReviewPage(){
                         <div className="bg-light bg-opacity-50 rounded-3 py-3 text-dark">"{items.message}"</div>
                     </div>
                      ):(
-                       <div className="border border-1 border-danger bg-danger bg-opacity-75 m-3 p-3 rounded-3">
-                        <div className="d-flex justify-content-between text-dark">
+                       <div className="border border-1 border-danger bg-danger m-3 p-3 rounded-3">
+                        <div className="d-flex justify-content-between text-light">
                             <p className="fw-bold">{items.name}</p>
                             <p className="float-end">{items.date}</p>
                             <p className="fw-bold">{`Room No: ${items.roomNumber}`}</p>
                         </div>
-                        <div className="bg-light bg-opacity-25 rounded-3 py-3 text-dark">"{items.message}"</div>
+                        <div className="bg-light bg-opacity-25 rounded-3 py-3 text-light">"{items.message}"</div>
                     </div>
                      )}   
                 </div> 

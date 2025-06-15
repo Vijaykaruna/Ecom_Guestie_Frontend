@@ -340,9 +340,15 @@ function GotoCartPage() {
           <Form.Group className="mb-2">
             <Form.Label>Room Number</Form.Label>
             <Form.Select name="roomNumber" value={repoterRoom} onChange={(e) => setReporterRoom(Number(e.target.value))} required>
-              <option value={0}>Select Room</option>
-              <option value={100}>100</option>
-              <option value={102}>102</option>
+              <option className="text-secondary" value={0}>Select Room</option>
+              {Array.from({ length: totalRooms }, (_, i) => {
+                const roomNumber = 100 + i;
+                return (
+                  <option key={roomNumber} value={roomNumber}>
+                    {roomNumber}
+                  </option>
+                );
+              })}
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-2">

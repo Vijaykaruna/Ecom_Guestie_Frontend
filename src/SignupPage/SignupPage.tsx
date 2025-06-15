@@ -30,8 +30,10 @@ function SignupPage(){
 
     return(
         <>
-           <Container className="d-flex align-items-center justiy-content-evenly gap-5 flex-column flex-lg-row">
-               <div className="border p-3 bg-light rounded-3 col-12 shadow-lg col-lg-7 mt-5">
+           <Container fluid
+            className="min-vh-100 d-flex align-items-center justify-content-center flex-column flex-lg-row gap-5"
+           >
+               <div className="border p-3 bg-light rounded-3 col-12 shadow-lg col-lg-6 mt-5">
                    <p className="h3 fw-bold text-danger border-bottom my-4 pb-4">SignUp <span className="text-secondary">Page</span></p>
                    <div className="text-center">
                       <img src={user} alt="user" className="img-fluid border rounded-pill p-1"/>

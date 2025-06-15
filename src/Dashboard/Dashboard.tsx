@@ -3,8 +3,9 @@ import TotalRooms from "../assets/totalRooms.png";
 import TotalSales from "../assets/totalSale.png";
 import TotalOrders from "../assets/totalOrder.png";
 import { CiEdit } from "react-icons/ci";
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, ToastContainer } from 'react-bootstrap';
 import axios from 'axios';
+import Toast from 'react-bootstrap/Toast';
 
 interface DashboardCard {
   title: string;
@@ -32,38 +33,42 @@ const Dashboard: React.FC = () => {
       status: string;
       _id: string;
       foods:food[];
-    };
-
-    // type Profile = {
-    //    id: string;
-    //    user: string;
-    //    email: string;
-    //    mobile: string;
-    //    hotel: string;
-    //    rooms: number;
-    //    address: string;
-    //   };
-  
-  //const [profileDetails, setProfileDetails] = useState<Profile | null>(null);  
+    }; 
   const [OrderList, setOrderList] = useState<OrderLists[]>([]);
   const [ShowFood, setShowFood] = useState<OrderLists[]>([]);
 
-   const FoodsClose = () => setFoods(false);
+  const FoodsClose = () => setFoods(false);
   const FoodsShow = () => setFoods(true);
   
   const [show, setShow] = useState(false);
   const[foods, setFoods] = useState(false);
-  const [rooms, setRooms] = useState<number>(0);
-  const handleClose = () => setShow(false);
+  const [rooms, setRooms] = useState<number>(10);
+  const [roomsInput, setRoomsInput] = useState<number>(10);
+  const handleClose = () =>{ setErr(""); setShow(false); };
   const handleShow = () => setShow(true);
   const[countOrder, setCountOrder] = useState(0);
   const [amount, setAmount] = useState(0);
+  const[err, setErr] = useState<string>('');
+  const [showA, setShowA] = useState(false);
+  const toggleShowA = () => setShowA(!showA);
 
   useEffect(() => {
   axios.get("http://localhost:5000/UserDetails", { withCredentials: true })
     .then(res => {
-     // setProfileDetails(res.data);
       setRooms(res.data.rooms);
+      setRoomsInput(res.data.rooms);
+      const primeStatus = res.data.subscripe;
+      if(primeStatus === false){
+         axios.post("http://localhost:5000/UnSubscriped", {}, { withCredentials: true })
+          .then(res => {
+            console.log(res.data.message);
+            setRooms(10);
+            setRoomsInput(10);
+          })
+          .catch(err => {
+            console.log(err.message);
+          });
+      }
     })
     .catch(e => {
       console.log(e);
@@ -99,14 +104,17 @@ const Dashboard: React.FC = () => {
      },[]);
 
 const SaveRooms = () => {
-  axios.patch("http://localhost:5000/SetRooms", { rooms }, { withCredentials: true })
-    .then(res => {
+  axios
+    .patch("http://localhost:5000/SetRooms", { roomsInput }, { withCredentials: true })
+    .then((res) => {
       console.log(res.data.message);
-      //setProfileDetails(res.data);
+      setRooms(roomsInput);
       handleClose();
     })
-    .catch(e => {
-      console.log(e);
+    .catch((e) => {
+     // console.log(e);
+      setErr(e.response?.data?.message || "Failed to update rooms");
+      toggleShowA();
     });
 };
 
@@ -142,15 +150,29 @@ const SaveRooms = () => {
         ))}
       </div>
       
+        <ToastContainer position="top-center" className="p-3">
+          <Toast show={showA} onClose={toggleShowA} bg='danger' delay={3000} autohide>
+            <Toast.Body className="text-light">
+              {err}
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
+
           <Modal show={show} onHide={handleClose} centered >
             <Modal.Header closeButton>
               <Modal.Title>Total Rooms</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className='text-center'>
               <Form.Group className="mb-2">
                 <Form.Label>Enter the total number of Rooms</Form.Label>
-                <Form.Control type="number" name="rooms" value={rooms} onChange={(e) => setRooms(Number(e.target.value))} required />
+                <Form.Control 
+                  type="number" 
+                  name="rooms" 
+                  value={roomsInput} 
+                  onChange={(e) => setRoomsInput(Number(e.target.value))}
+                />
               </Form.Group>
+              <strong className='text-danger'>{err}</strong>
             </Modal.Body>
             <Modal.Footer>
               <Button 
