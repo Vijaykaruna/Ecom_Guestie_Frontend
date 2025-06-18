@@ -129,7 +129,20 @@ const Subscription = () => {
                 <td>{profile.email}</td>
                 <td>{profile.mobile}</td>
                 <td>{profile.rooms}</td>
-                <td>{profile.subscripe === true ? (<button className="btn btn-success" disabled>Active</button> /*<div className="border bg-success py-2 rounded-2 mx-2 text-light">Actvice</div>*/ ) : (<button className="btn btn-danger" onClick={() => handleShow(profile.id)}>Inactive</button>)}</td>
+                <td>
+                  {/* {profile.subscripe === true ? (
+                  <button className="btn btn-success" disabled>Active</button>
+                  ) : (
+                  <button className="btn btn-danger" onClick={() => handleShow(profile.id)}>Inactive</button>
+                  )} */}
+                  {profile.email === "iknotdigitalsolution@gmail.com" ? (
+                    <button className="btn btn-warning text-light" disabled>Admin</button>
+                  ) : ( profile.subscripe === true ? (
+                    <button className="btn btn-success" disabled>Active</button>
+                  ) : (
+                    <button className="btn btn-danger" onClick={() => handleShow(profile.id)}>Inactive</button>
+                  ))}
+                </td>
                 <td>{profile.hotel}</td>
                 <td>{profile.address}</td>
               </tr>
